@@ -1,8 +1,23 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import HomePage from './pages/HomePage'
+import MovieDetailPage from './pages/MovieDetailPage'
+import BookingPage from './pages/BookingPage'
+import UserHistoryPage from './pages/UserHistoryPage'
+import AdminPage from './pages/AdminPage'
+import NotFoundPage from './pages/NotFoundPage'
+
 const App = () => {
   return (
-    <div>
-      <h1>Zinema</h1>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/movies/:id" element={<MovieDetailPage />} />
+        <Route path="/booking/:id" element={<BookingPage />} />
+        <Route path="/history" element={<UserHistoryPage />} />
+        <Route path="/admin" element={<AdminPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
