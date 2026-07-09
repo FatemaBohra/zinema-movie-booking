@@ -1,1 +1,14 @@
-spring.application.name=backend
+spring:
+  application:
+    name: backend
+
+aws:
+  region: us-east-1
+  endpoint: http://localhost:4566
+  accessKey: test
+  secretKey: test
+  dynamodb:
+    table-name: zinema-table
+
+server:
+  port: 8080
