@@ -35,7 +35,7 @@ public class Movie {
     private String description;
     private String genre;
     private String director;
-    private int durationMinutes;
+    private Integer durationMinutes;
     private String posterUrl;      // S3 URL
     private String releaseDate;
     private double rating;
