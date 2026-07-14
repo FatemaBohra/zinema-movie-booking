@@ -22,8 +22,9 @@ public class MovieService {
     private final MovieRepository movieRepository;
 
     public Movie createMovie(Movie movie) {
-        movie.setMovieId("MOVIE#" + UUID.randomUUID());
+        movie.setMovieId("MOVIE-" + UUID.randomUUID());
         movie.setSk("METADATA");
+        movieRepository.save(movie);
         return movie;
     }
 

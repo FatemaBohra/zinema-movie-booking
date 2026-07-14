@@ -37,6 +37,7 @@ public class MovieController {
 
     @GetMapping("/{movieId}")
     public ResponseEntity<Movie> getMovie(@PathVariable String movieId) {
+        System.out.println("Looking for movieId: " + movieId);
         Movie movie = movieService.getMovie(movieId);
         if (movie == null) {
             return ResponseEntity.notFound().build();
