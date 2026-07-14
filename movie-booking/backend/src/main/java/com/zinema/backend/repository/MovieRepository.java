@@ -18,7 +18,7 @@ public class MovieRepository {
     private final DynamoDbTable<Movie> movieTable;
 
     public MovieRepository(DynamoDbEnhancedClient enhancedClient,
-                           @Value("${aws.dynamodb.table-name}") String tableName) {
+                           @Value("${aws.dynamodb.movies-table}") String tableName) {
         this.movieTable = enhancedClient.table(tableName, TableSchema.fromBean(Movie.class));
     }
 

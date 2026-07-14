@@ -18,7 +18,7 @@ public class ShowtimeRepository {
     private final DynamoDbTable<Showtime> showtimeTable;
 
     public ShowtimeRepository(DynamoDbEnhancedClient enhancedClient,
-                              @Value("${aws.dynamodb.table-name}") String tableName) {
+                              @Value("${aws.dynamodb.showtimes-table}") String tableName) {
         this.showtimeTable = enhancedClient.table(tableName, TableSchema.fromBean(Showtime.class));
     }
 
