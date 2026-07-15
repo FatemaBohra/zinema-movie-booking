@@ -30,3 +30,7 @@ target/
 
 # Spring Boot
 spring-pid
+
+# Secrets
+application-secrets.yml
+.env
