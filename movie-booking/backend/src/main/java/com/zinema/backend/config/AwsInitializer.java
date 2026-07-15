@@ -4,6 +4,7 @@
 
 package com.zinema.backend.config;
 
+import com.zinema.backend.service.S3Service;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,13 +12,12 @@ import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
 
-import java.util.List;
-
 @Component
 @RequiredArgsConstructor
-public class DynamoDbInitializer {
+public class AwsInitializer {
 
     private final DynamoDbClient dynamoDbClient;
+    private final S3Service s3Service;
 
     @Value("${aws.dynamodb.movies-table}")
     private String moviesTable;
@@ -28,12 +28,12 @@ public class DynamoDbInitializer {
     @Value("${aws.dynamodb.bookings-table}")
     private String bookingsTable;
 
-    // @PostConstruct means it runs automatically when Spring Boot starts
     @PostConstruct
     public void initializeTables() {
         createTableIfNotExists(moviesTable, "movieId", "sk");
         createTableIfNotExists(showtimesTable, "showtimeId", "sk");
         createTableIfNotExists(bookingsTable, "userId", "sk");
+        s3Service.createBucketIfNotExists();
     }
 
     private void createTableIfNotExists(String tableName, String partitionKey, String sortKey) {

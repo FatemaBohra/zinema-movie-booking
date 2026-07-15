@@ -1,6 +1,10 @@
 spring:
   application:
     name: backend
+#  This tells Spring Boot to import application-secrets.yml if it exists.
+#  The optional: prefix means it won't crash if the file is missing (useful for production where you'll use real environment variables instead).
+  config:
+    import: optional:classpath:application-secrets.yml
 
 aws:
   region: us-east-1
@@ -11,6 +15,8 @@ aws:
     movies-table: zinema-movies
     showtimes-table: zinema-showtimes
     bookings-table: zinema-bookings
+  s3:
+    bucket-name: zinema-posters
 
 auth0:
   domain: dev-58r52o8fx5djc8od.us.auth0.com
