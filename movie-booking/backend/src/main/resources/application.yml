@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: backend
+
+aws:
+  region: us-east-1
+  endpoint: http://localhost:4566
+  accessKey: test
+  secretKey: test
+  dynamodb:
+    movies-table: zinema-movies
+    showtimes-table: zinema-showtimes
+    bookings-table: zinema-bookings
+
+auth0:
+  domain: dev-58r52o8fx5djc8od.us.auth0.com
+  audience: https://zinema-api
+
+stripe:
+  secret-key: ${STRIPE_SECRET_KEY}
+
+server:
+  port: 8080
