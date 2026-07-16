@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react'
 import axios from 'axios'
+import StripeCheckout from '../components/StripeCheckout'
 
 interface Showtime {
     showtimeId: string
@@ -36,6 +37,10 @@ const BookingPage = () => {
     const [booking, setBooking] = useState(false)
     const [bookedSeats, setBookedSeats] = useState<string[]>([])
     const [error, setError] = useState<string | null>(null)
+
+    const [clientSecret, setClientSecret] = useState<string | null>(null)
+    const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null)
+    const [showCheckout, setShowCheckout] = useState(false)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -77,29 +82,35 @@ const BookingPage = () => {
 
             const token = await getAccessTokenSilently()
 
-            // Step 1 — create payment intent
+            // Create payment intent
             const paymentRes = await axios.post(
                 `http://localhost:8080/api/payments/create-payment-intent?amount=${showtime.ticketPrice}&currency=cad`,
                 {},
                 { headers: { Authorization: `Bearer ${token}` } }
             )
 
-            const paymentIntentId = paymentRes.data.paymentIntentId
-            console.log('Payment intent created:', paymentIntentId)
+            setClientSecret(paymentRes.data.clientSecret)
+            setPaymentIntentId(paymentRes.data.paymentIntentId)
+            setShowCheckout(true)
+        } catch (err) {
+            console.error('Error creating payment intent:', err)
+            setError('Failed to initiate payment. Please try again.')
+        } finally {
+            setBooking(false)
+        }
+    }
 
-            // Step 2 — create booking with paymentIntentId
+    const handlePaymentSuccess = async (confirmedPaymentIntentId: string) => {
+        try {
+            const token = await getAccessTokenSilently()
             await axios.post(
-                `http://localhost:8080/api/bookings?showtimeId=${id}&seatId=${selectedSeat}&paymentIntentId=${paymentIntentId}`,
+                `http://localhost:8080/api/bookings?showtimeId=${id}&seatId=${selectedSeat}&paymentIntentId=${confirmedPaymentIntentId}`,
                 {},
                 { headers: { Authorization: `Bearer ${token}` } }
             )
-
             navigate('/history')
         } catch (err) {
-            console.error('Booking error:', err)
-            setError('Booking failed. Please try again.')
-        } finally {
-            setBooking(false)
+            setError('Payment succeeded but booking failed. Please contact support.')
         }
     }
 
@@ -375,6 +386,33 @@ const BookingPage = () => {
                     {booking ? 'Processing...' : isAuthenticated ? 'Book Now' : 'Login to Book'}
                 </button>
             </div>
+            {showCheckout && clientSecret && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 1000,
+                    padding: '1rem',
+                }}>
+                    <div style={{ width: '100%', maxWidth: '480px' }}>
+                        <StripeCheckout
+                            clientSecret={clientSecret}
+                            onSuccess={handlePaymentSuccess}
+                            onCancel={() => {
+                                setShowCheckout(false)
+                                setClientSecret(null)
+                            }}
+                            amount={showtime?.ticketPrice || 0}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
