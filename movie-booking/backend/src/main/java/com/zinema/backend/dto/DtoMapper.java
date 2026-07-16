@@ -38,6 +38,7 @@ public class DtoMapper {
 
     public static BookingDTO toBookingDTO(Booking booking, Movie movie, Showtime showtime) {
         return BookingDTO.builder()
+                .userId(booking.getUserId())
                 .bookingId(booking.getBookingId())
                 .movieId(booking.getMovieId())
                 .movieTitle(movie != null ? movie.getTitle() : booking.getMovieId())

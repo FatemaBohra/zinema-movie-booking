@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class BookingDTO {
+    private String userId;
     private String bookingId;
     private String movieId;
     private String movieTitle;

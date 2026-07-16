@@ -39,4 +39,5 @@ public class Movie {
     private String posterUrl;      // S3 URL
     private String releaseDate;
     private double rating;
+    private boolean deleted;
 }

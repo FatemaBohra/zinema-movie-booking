@@ -34,11 +34,18 @@ public class MovieService {
     }
 
     public List<Movie> getAllMovies() {
-        return movieRepository.findAll();
+        return movieRepository.findAll()
+                .stream()
+                .filter(movie -> !movie.isDeleted())
+                .collect(java.util.stream.Collectors.toList());
     }
 
     public void deleteMovie(String movieId) {
-        movieRepository.delete(movieId);
+        Movie movie = movieRepository.findById(movieId);
+        if (movie != null) {
+            movie.setDeleted(true);
+            movieRepository.save(movie);
+        }
     }
 
     public Movie updateMovie(Movie movie) {

@@ -110,7 +110,22 @@ public class BookingService {
     public BookingDTO enrichBooking(Booking booking) {
         Movie movie = movieRepository.findById(booking.getMovieId());
         Showtime showtime = showtimeRepository.findById(booking.getShowtimeId());
-        return DtoMapper.toBookingDTO(booking, movie, showtime);
+        String movieTitle = (movie == null || movie.isDeleted())
+                ? "Movie no longer available"
+                : movie.getTitle();
+        return BookingDTO.builder()
+                .bookingId(booking.getBookingId())
+                .movieId(booking.getMovieId())
+                .movieTitle(movieTitle)
+                .showtimeId(booking.getShowtimeId())
+                .showtimeTime(showtime != null ? showtime.getStartTime() : "")
+                .hall(showtime != null ? showtime.getHall() : "")
+                .seatId(booking.getSeatId())
+                .status(booking.getStatus())
+                .totalAmount(booking.getTotalAmount())
+                .createdAt(booking.getCreatedAt())
+                .paymentId(booking.getPaymentId())
+                .build();
     }
 
     /**

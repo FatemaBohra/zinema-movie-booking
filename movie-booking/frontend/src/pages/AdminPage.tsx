@@ -4,15 +4,28 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import type { Movie } from '../components/MovieCard'
 
+interface Booking {
+    bookingId: string
+    movieTitle: string
+    showtimeTime: string
+    hall: string
+    seatId: string
+    status: string
+    totalAmount: number
+    createdAt: string
+    userId: string
+}
+
 const AdminPage = () => {
     const { isAuthenticated, user, getAccessTokenSilently } = useAuth0()
     const navigate = useNavigate()
 
     const [movies, setMovies] = useState<Movie[]>([])
+    const [bookings, setBookings] = useState<Booking[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState<string | null>(null)
-    const [activeTab, setActiveTab] = useState<'movies' | 'showtimes'>('movies')
+    const [activeTab, setActiveTab] = useState<'movies' | 'showtimes' | 'bookings'>('movies')
 
     const [newMovie, setNewMovie] = useState({
         title: '',
@@ -32,6 +45,7 @@ const AdminPage = () => {
         totalSeats: '',
         ticketPrice: '',
     })
+
 
     const isAdmin = user?.['https://zinema-api/roles']?.includes('admin')
 
@@ -53,6 +67,27 @@ const AdminPage = () => {
             setLoading(false)
         }
     }
+
+    const fetchBookings = async () => {
+        try {
+            const token = await getAccessTokenSilently()
+            const res = await axios.get('http://localhost:8080/api/bookings', {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            setBookings(res.data)
+        } catch {
+            setError('Failed to load bookings')
+        }
+    }
+
+    useEffect(() => {
+        if (!isAuthenticated || !isAdmin) {
+            navigate('/')
+            return
+        }
+        fetchMovies()
+        fetchBookings()
+    }, [isAuthenticated])
 
     const handleAddMovie = async () => {
         try {
@@ -159,7 +194,7 @@ const AdminPage = () => {
 
             {/* Tabs */}
             <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
-                {(['movies', 'showtimes'] as const).map(tab => (
+                {(['movies', 'showtimes', 'bookings'] as const).map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
@@ -307,6 +342,70 @@ const AdminPage = () => {
                     <button style={buttonStyle} onClick={handleAddShowtime}>
                         Add Showtime
                     </button>
+                </div>
+            )}
+
+            {activeTab === 'bookings' && (
+                <div>
+                    <h2 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '1.25rem' }}>
+                        All Bookings ({bookings.length})
+                    </h2>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                        {bookings.length === 0 && (
+                            <p style={{ color: 'var(--text-secondary)' }}>No bookings yet</p>
+                        )}
+                        {bookings.map(booking => (
+                            <div key={booking.bookingId} style={{
+                                backgroundColor: 'var(--bg-card)',
+                                border: '1px solid var(--border)',
+                                borderRadius: '8px',
+                                padding: '1rem 1.25rem',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                opacity: booking.status === 'CANCELLED' ? 0.6 : 1,
+                            }}>
+                                <div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.4rem' }}>
+                                        <span style={{
+                                            fontSize: '0.75rem',
+                                            fontWeight: '600',
+                                            padding: '0.2rem 0.6rem',
+                                            borderRadius: '4px',
+                                            backgroundColor: booking.status === 'CONFIRMED'
+                                                ? 'rgba(34, 197, 94, 0.15)'
+                                                : 'rgba(255, 107, 107, 0.15)',
+                                            color: booking.status === 'CONFIRMED' ? '#22c55e' : 'var(--accent)',
+                                        }}>
+                                            {booking.status}
+                                        </span>
+                                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                                            {booking.bookingId}
+                                        </span>
+                                    </div>
+                                    <p style={{ fontWeight: '600', marginBottom: '0.25rem' }}>{booking.movieTitle}</p>
+                                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
+                                        {new Date(booking.showtimeTime).toLocaleString()}
+                                    </p>
+                                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
+                                        Location: {booking.hall}
+                                    </p>
+                                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                                        Seat: {booking.seatId}
+                                    </p>
+                                </div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <p style={{
+                                        fontSize: '1.1rem',
+                                        fontWeight: '700',
+                                        color: 'var(--accent)',
+                                    }}>
+                                        CA${booking.totalAmount}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             )}
         </div>
