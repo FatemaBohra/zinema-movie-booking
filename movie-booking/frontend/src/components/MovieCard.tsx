@@ -90,7 +90,7 @@ const MovieCard = ({ movie }: MovieCardProps) => {
                         {movie.genre}
                     </span>
                     <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                        ⭐ {movie.rating}
+                        ⭐ {movie.rating.toFixed(1)}
                     </span>
                 </div>
 

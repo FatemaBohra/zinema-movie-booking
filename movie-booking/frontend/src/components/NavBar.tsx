@@ -1,8 +1,15 @@
 import { useAuth0 } from '@auth0/auth0-react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 const NavBar = () => {
     const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0()
+    const location = useLocation()
+
+    const linkStyle = (path: string) => ({
+        color: location.pathname === path ? 'var(--accent)' : 'var(--text-secondary)',
+        fontSize: '0.9rem',
+        transition: 'color 0.2s',
+    })
 
     return (
         <nav style={{
@@ -29,9 +36,9 @@ const NavBar = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                 <Link
                     to="/"
-                    style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', transition: 'color 0.2s' }}
+                    style={linkStyle('/')}
                     onMouseEnter={e => (e.target as HTMLAnchorElement).style.color = 'var(--accent-hover)'}
-                    onMouseLeave={e => (e.target as HTMLAnchorElement).style.color = 'var(--text-secondary)'}
+                    onMouseLeave={e => (e.target as HTMLAnchorElement).style.color = linkStyle('/').color}
                 >
                     Movies
                 </Link>
@@ -39,9 +46,9 @@ const NavBar = () => {
                 {isAuthenticated && (
                     <Link
                         to="/history"
-                        style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', transition: 'color 0.2s' }}
+                        style={linkStyle('/history')}
                         onMouseEnter={e => (e.target as HTMLAnchorElement).style.color = 'var(--accent-hover)'}
-                        onMouseLeave={e => (e.target as HTMLAnchorElement).style.color = 'var(--text-secondary)'}
+                        onMouseLeave={e => (e.target as HTMLAnchorElement).style.color = linkStyle('/history').color}
                     >
                         My Bookings
                     </Link>
@@ -50,9 +57,9 @@ const NavBar = () => {
                 {isAuthenticated && user?.['https://zinema-api/roles']?.includes('admin') && (
                     <Link
                         to="/admin"
-                        style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', transition: 'color 0.2s' }}
+                        style={linkStyle('/admin')}
                         onMouseEnter={e => (e.target as HTMLAnchorElement).style.color = 'var(--accent-hover)'}
-                        onMouseLeave={e => (e.target as HTMLAnchorElement).style.color = 'var(--text-secondary)'}
+                        onMouseLeave={e => (e.target as HTMLAnchorElement).style.color = linkStyle('/admin').color}
                     >
                         Admin
                     </Link>
