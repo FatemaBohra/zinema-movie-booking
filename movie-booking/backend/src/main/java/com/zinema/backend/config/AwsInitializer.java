@@ -1,5 +1,16 @@
 /**
  * This is table initializer so that we stop losing data on every LocalStack restart.
+ *
+ * TMDB (The Movie Database):
+ * Free API at themoviedb.org
+ * Has movie titles, descriptions, genres, directors, ratings, and real poster images
+ * Very generous free tier — 40 requests per second
+ * Used by many real apps
+ *
+ * The plan for Zinema:
+ * Call TMDB API on startup to fetch popular movies
+ * Save them to DynamoDB with real poster URLs from TMDB
+ * Keep your admin panel for editing and deleting
  * */
 
 package com.zinema.backend.config;
