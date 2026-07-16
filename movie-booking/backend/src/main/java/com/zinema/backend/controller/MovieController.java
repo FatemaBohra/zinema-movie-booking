@@ -19,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.zinema.backend.dto.DtoMapper;
+import com.zinema.backend.dto.MovieDTO;
 
 import java.util.List;
 
@@ -31,31 +33,33 @@ public class MovieController {
     private final MovieService movieService;
 
     @GetMapping
-    public ResponseEntity<List<Movie>> getAllMovies() {
-        return ResponseEntity.ok(movieService.getAllMovies());
+    public ResponseEntity<List<MovieDTO>> getAllMovies() {
+        return ResponseEntity.ok(movieService.getAllMovies()
+                .stream()
+                .map(DtoMapper::toMovieDTO)
+                .collect(java.util.stream.Collectors.toList()));
     }
 
     @GetMapping("/{movieId}")
-    public ResponseEntity<Movie> getMovie(@PathVariable String movieId) {
-        System.out.println("Looking for movieId: " + movieId);
+    public ResponseEntity<MovieDTO> getMovie(@PathVariable String movieId) {
         Movie movie = movieService.getMovie(movieId);
         if (movie == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(movie);
+        return ResponseEntity.ok(DtoMapper.toMovieDTO(movie));
     }
 
     @PostMapping
-    public ResponseEntity<Movie> createMovie(@RequestBody Movie movie) {
+    public ResponseEntity<MovieDTO> createMovie(@RequestBody Movie movie) {
         Movie created = movieService.createMovie(movie);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(DtoMapper.toMovieDTO(created));
     }
 
     @PutMapping("/{movieId}")
-    public ResponseEntity<Movie> updateMovie(@PathVariable String movieId,
-                                             @RequestBody Movie movie) {
+    public ResponseEntity<MovieDTO> updateMovie(@PathVariable String movieId,
+                                                @RequestBody Movie movie) {
         movie.setMovieId(movieId);
-        return ResponseEntity.ok(movieService.updateMovie(movie));
+        return ResponseEntity.ok(DtoMapper.toMovieDTO(movieService.updateMovie(movie)));
     }
 
     @DeleteMapping("/{movieId}")

@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.zinema.backend.dto.DtoMapper;
+import com.zinema.backend.dto.ShowtimeDTO;
 
 import java.util.List;
 
@@ -18,28 +20,34 @@ public class ShowtimeController {
     private final ShowtimeService showtimeService;
 
     @GetMapping
-    public ResponseEntity<List<Showtime>> getAllShowtimes() {
-        return ResponseEntity.ok(showtimeService.getAllShowtimes());
+    public ResponseEntity<List<ShowtimeDTO>> getAllShowtimes() {
+        return ResponseEntity.ok(showtimeService.getAllShowtimes()
+                .stream()
+                .map(DtoMapper::toShowtimeDTO)
+                .collect(java.util.stream.Collectors.toList()));
     }
 
     @GetMapping("/{showtimeId}")
-    public ResponseEntity<Showtime> getShowtime(@PathVariable String showtimeId) {
+    public ResponseEntity<ShowtimeDTO> getShowtime(@PathVariable String showtimeId) {
         Showtime showtime = showtimeService.getShowtime(showtimeId);
         if (showtime == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(showtime);
+        return ResponseEntity.ok(DtoMapper.toShowtimeDTO(showtime));
     }
 
     @GetMapping("/movie/{movieId}")
-    public ResponseEntity<List<Showtime>> getShowtimesByMovie(@PathVariable String movieId) {
-        return ResponseEntity.ok(showtimeService.getShowtimesByMovie(movieId));
+    public ResponseEntity<List<ShowtimeDTO>> getShowtimesByMovie(@PathVariable String movieId) {
+        return ResponseEntity.ok(showtimeService.getShowtimesByMovie(movieId)
+                .stream()
+                .map(DtoMapper::toShowtimeDTO)
+                .collect(java.util.stream.Collectors.toList()));
     }
 
     @PostMapping
-    public ResponseEntity<Showtime> createShowtime(@RequestBody Showtime showtime) {
+    public ResponseEntity<ShowtimeDTO> createShowtime(@RequestBody Showtime showtime) {
         Showtime created = showtimeService.createShowtime(showtime);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(DtoMapper.toShowtimeDTO(created));
     }
 
     @DeleteMapping("/{showtimeId}")
