@@ -34,6 +34,7 @@ const BookingPage = () => {
     const [selectedSeat, setSelectedSeat] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
     const [booking, setBooking] = useState(false)
+    const [bookedSeats, setBookedSeats] = useState<string[]>([])
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
@@ -43,6 +44,8 @@ const BookingPage = () => {
                 setShowtime(showtimeRes.data)
                 const movieRes = await axios.get(`http://localhost:8080/api/movies/${showtimeRes.data.movieId}`)
                 setMovie(movieRes.data)
+                const seatsRes = await axios.get(`http://localhost:8080/api/bookings/showtime/${id}/seats`)
+                setBookedSeats(seatsRes.data)
             } catch (err) {
                 setError('Failed to load showtime details')
             } finally {
@@ -226,33 +229,46 @@ const BookingPage = () => {
                         {Array.from({ length: SEATS_PER_ROW }, (_, i) => {
                             const seatId = `${row}${i + 1}`
                             const isSelected = selectedSeat === seatId
+                            const isBooked = bookedSeats.includes(seatId)
+
                             return (
                                 <div
                                     key={seatId}
-                                    onClick={() => setSelectedSeat(isSelected ? null : seatId)}
+                                    onClick={() => {
+                                        if (!isBooked) setSelectedSeat(isSelected ? null : seatId)
+                                    }}
                                     style={{
                                         width: '36px',
                                         height: '36px',
                                         borderRadius: '4px 4px 0 0',
-                                        backgroundColor: isSelected ? 'var(--accent)' : 'var(--bg-secondary)',
-                                        border: `1px solid ${isSelected ? 'var(--accent)' : 'var(--border)'}`,
-                                        cursor: 'pointer',
+                                        backgroundColor: isBooked
+                                            ? 'var(--text-muted)'
+                                            : isSelected
+                                                ? 'var(--accent)'
+                                                : 'var(--bg-secondary)',
+                                        border: `1px solid ${isBooked
+                                            ? 'var(--text-muted)'
+                                            : isSelected
+                                                ? 'var(--accent)'
+                                                : 'var(--border)'}`,
+                                        cursor: isBooked ? 'not-allowed' : 'pointer',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         fontSize: '0.65rem',
-                                        color: isSelected ? 'white' : 'var(--text-muted)',
+                                        color: isBooked ? 'var(--bg-secondary)' : isSelected ? 'white' : 'var(--text-muted)',
                                         transition: 'all 0.15s',
+                                        opacity: isBooked ? 0.5 : 1,
                                     }}
                                     onMouseEnter={e => {
-                                        if (!isSelected) {
+                                        if (!isSelected && !isBooked) {
                                             const el = e.currentTarget as HTMLDivElement
                                             el.style.backgroundColor = 'var(--border-hover)'
                                             el.style.borderColor = 'var(--accent)'
                                         }
                                     }}
                                     onMouseLeave={e => {
-                                        if (!isSelected) {
+                                        if (!isSelected && !isBooked) {
                                             const el = e.currentTarget as HTMLDivElement
                                             el.style.backgroundColor = 'var(--bg-secondary)'
                                             el.style.borderColor = 'var(--border)'
@@ -290,6 +306,15 @@ const BookingPage = () => {
                         borderRadius: '3px',
                     }} />
                     <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Selected</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <div style={{
+                        width: '20px', height: '20px',
+                        backgroundColor: 'var(--text-muted)',
+                        borderRadius: '3px',
+                        opacity: 0.5,
+                    }} />
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Taken</span>
                 </div>
             </div>
 

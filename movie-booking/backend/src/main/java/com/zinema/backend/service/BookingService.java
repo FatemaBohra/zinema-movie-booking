@@ -107,6 +107,15 @@ public class BookingService {
                 .collect(java.util.stream.Collectors.toList());
     }
 
+    public List<String> getBookedSeatsForShowtime(String showtimeId) {
+        return bookingRepository.findAll()
+                .stream()
+                .filter(b -> b.getShowtimeId().equals(showtimeId)
+                        && !b.getStatus().equals("CANCELLED"))
+                .map(Booking::getSeatId)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
     public BookingDTO enrichBooking(Booking booking) {
         Movie movie = movieRepository.findById(booking.getMovieId());
         Showtime showtime = showtimeRepository.findById(booking.getShowtimeId());

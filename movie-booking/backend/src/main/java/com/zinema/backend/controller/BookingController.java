@@ -30,6 +30,12 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.getAllBookings());
     }
 
+    @GetMapping("/showtime/{showtimeId}/seats")
+    public ResponseEntity<List<String>> getBookedSeats(@PathVariable String showtimeId) {
+        List<String> bookedSeats = bookingService.getBookedSeatsForShowtime(showtimeId);
+        return ResponseEntity.ok(bookedSeats);
+    }
+
     @PutMapping("/{bookingId}/cancel")
     public ResponseEntity<BookingDTO> cancelBooking(@PathVariable String bookingId) {
         return ResponseEntity.ok(bookingService.cancelBooking(bookingId));

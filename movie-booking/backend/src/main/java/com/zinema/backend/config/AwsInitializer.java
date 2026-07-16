@@ -149,7 +149,7 @@ public class AwsInitializer {
 
             int count2 = 0;
             for (JsonNode movie : results) {
-                if (count2 >= 10) break;
+                if (count2 >= 15) break;
 
                 String movieId = "MOVIE-" + java.util.UUID.randomUUID();
                 JsonNode posterNode = movie.get("poster_path");
