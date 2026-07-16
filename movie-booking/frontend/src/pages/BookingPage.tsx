@@ -63,6 +63,11 @@ const BookingPage = () => {
             return
         }
 
+        if (!showtime) {
+            setError('Showtime not found')
+            return
+        }
+
         try {
             setBooking(true)
             setError(null)
@@ -71,8 +76,19 @@ const BookingPage = () => {
             // so Spring Boot can validate it.
             const token = await getAccessTokenSilently()
 
+            // Step 1 — create payment intent
+            const paymentRes = await axios.post(
+                `http://localhost:8080/api/payments/create-payment-intent?amount=${showtime.ticketPrice}&currency=cad`,
+                {},
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+
+            const paymentIntentId = paymentRes.data.paymentIntentId
+            console.log('Payment intent created:', paymentIntentId)
+
+            // Step 2 — create booking with paymentIntentId
             await axios.post(
-                `http://localhost:8080/api/bookings?showtimeId=${id}&seatId=${selectedSeat}`,
+                `http://localhost:8080/api/bookings?showtimeId=${id}&seatId=${selectedSeat}&paymentIntentId=${paymentIntentId}`,
                 {},
                 { headers: { Authorization: `Bearer ${token}` } }
             )
@@ -85,6 +101,7 @@ const BookingPage = () => {
             setBooking(false)
         }
     }
+
 
     if (loading) return (
         <div style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '4rem' }}>

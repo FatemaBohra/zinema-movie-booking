@@ -37,8 +37,9 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<BookingDTO> createBooking(
             @RequestParam String showtimeId,
-            @RequestParam String seatId) {
-        Booking booking = bookingService.createBooking(showtimeId, seatId);
+            @RequestParam String seatId,
+            @RequestParam(required = false) String paymentIntentId) {
+        Booking booking = bookingService.createBooking(showtimeId, seatId, paymentIntentId);
         return ResponseEntity.status(HttpStatus.CREATED).body(DtoMapper.toBookingDTO(booking));
     }
 

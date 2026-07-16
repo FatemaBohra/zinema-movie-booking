@@ -31,7 +31,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // This allows all preflight OPTIONS requests through before security checks them
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // This allows all preflight OPTIONS requests through before security checks them
                         .requestMatchers(HttpMethod.GET, "/api/movies/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/showtimes/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/movies/**").hasAuthority("ROLE_admin")
@@ -39,9 +39,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/movies/**").hasAuthority("ROLE_admin")
                         .requestMatchers(HttpMethod.POST, "/api/showtimes/**").hasAuthority("ROLE_admin")
                         .requestMatchers(HttpMethod.DELETE, "/api/showtimes/**").hasAuthority("ROLE_admin")
-                                .requestMatchers("/api/payments/**").permitAll()
-                                .requestMatchers("/api/s3/**").hasAuthority("ROLE_admin")
-//                        .requestMatchers("/api/payments/**").authenticated()
+                        .requestMatchers("/api/payments/**").authenticated() // Stripe authentication
+                        .requestMatchers("/api/s3/**").hasAuthority("ROLE_admin")
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

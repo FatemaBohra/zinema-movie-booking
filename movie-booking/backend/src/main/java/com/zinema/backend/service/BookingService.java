@@ -40,7 +40,7 @@ public class BookingService {
      * 4. Create and save the booking with status CONFIRMED
      * 5. Decrement availableSeats on the showtime
      */
-    public Booking createBooking(String showtimeId, String seatId) {
+    public Booking createBooking(String showtimeId, String seatId, String paymentIntentId) {
         // Step 1 — get userId from JWT, not from request parameter
         String userId = getCurrentUserId();
 
@@ -67,6 +67,7 @@ public class BookingService {
                 .status("CONFIRMED")
                 .totalAmount(showtime.getTicketPrice())
                 .createdAt(LocalDateTime.now().toString())
+                .paymentId(paymentIntentId) // link payment intent
                 .build();
 
         bookingRepository.save(booking);
