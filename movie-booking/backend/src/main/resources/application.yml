@@ -25,5 +25,8 @@ auth0:
 stripe:
   secret-key: ${STRIPE_SECRET_KEY}
 
+tmdb:
+  api-key: ${TMDB_API_KEY}
+
 server:
   port: 8080
