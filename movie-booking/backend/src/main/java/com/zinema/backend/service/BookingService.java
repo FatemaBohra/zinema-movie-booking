@@ -5,6 +5,8 @@ import com.zinema.backend.model.Showtime;
 import com.zinema.backend.repository.BookingRepository;
 import com.zinema.backend.repository.ShowtimeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,23 +20,46 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final ShowtimeRepository showtimeRepository;
 
-    public Booking createBooking(String userId, String showtimeId, String seatId) {
-        // 1. Get the showtime
+    /**
+     * Extracts the authenticated user's ID from the JWT token.
+     * Instead of passing userId manually in every request,
+     * we read it directly from the security context.
+     * The JWT subject (sub) is the Auth0 user ID e.g. "auth0|6a5649eac6f7241ac1c8f700"
+     */
+    private String getCurrentUserId() {
+        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return jwt.getSubject();
+    }
+
+    /**
+     * Creates a new booking for the currently authenticated user.
+     * Flow:
+     * 1. Extract userId from JWT token
+     * 2. Find the showtime — throw if not found
+     * 3. Check seat availability — throw if no seats left
+     * 4. Create and save the booking with status CONFIRMED
+     * 5. Decrement availableSeats on the showtime
+     */
+    public Booking createBooking(String showtimeId, String seatId) {
+        // Step 1 — get userId from JWT, not from request parameter
+        String userId = getCurrentUserId();
+
+        // Step 2 — fetch the showtime from DynamoDB
         Showtime showtime = showtimeRepository.findById(showtimeId);
         if (showtime == null) {
             throw new RuntimeException("Showtime not found");
         }
 
-        // 2. Check seat availability
+        // Step 3 — check if seats are available
         if (showtime.getAvailableSeats() <= 0) {
             throw new RuntimeException("No seats available for this showtime");
         }
 
-        // 3. Create the booking
+        // Step 4 — build and save the booking
         String bookingId = "BOOKING-" + UUID.randomUUID();
         Booking booking = Booking.builder()
                 .userId(userId)
-                .sk(bookingId)
+                .sk(bookingId)           // sort key in DynamoDB
                 .bookingId(bookingId)
                 .movieId(showtime.getMovieId())
                 .showtimeId(showtimeId)
@@ -44,36 +69,55 @@ public class BookingService {
                 .createdAt(LocalDateTime.now().toString())
                 .build();
 
-        // 4. Save booking
         bookingRepository.save(booking);
 
-        // 5. Decrement available seats
+        // Step 5 — decrement available seats so no one else can book the same seat
         showtime.setAvailableSeats(showtime.getAvailableSeats() - 1);
         showtimeRepository.save(showtime);
 
         return booking;
     }
 
-    public List<Booking> getBookingsByUser(String userId) {
+    /**
+     * Returns all bookings for the currently authenticated user.
+     * userId is extracted from JWT — no need to pass it in the URL.
+     */
+    public List<Booking> getBookingsByUser() {
+        String userId = getCurrentUserId();
         return bookingRepository.findByUserId(userId);
     }
 
+    /**
+     * Returns all bookings across all users.
+     * Used by the admin panel to view all bookings.
+     */
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
     }
 
-    public Booking cancelBooking(String userId, String bookingId) {
-        // 1. Find the booking
+    /**
+     * Cancels a booking for the currently authenticated user.
+     * Flow:
+     * 1. Extract userId from JWT
+     * 2. Find the booking — throw if not found
+     * 3. Update status to CANCELLED
+     * 4. Increment availableSeats back on the showtime
+     */
+    public Booking cancelBooking(String bookingId) {
+        // Step 1 — get userId from JWT
+        String userId = getCurrentUserId();
+
+        // Step 2 — find the booking using userId (partition key) and bookingId (sort key)
         Booking booking = bookingRepository.findById(userId, bookingId);
         if (booking == null) {
             throw new RuntimeException("Booking not found");
         }
 
-        // 2. Update status to CANCELLED
+        // Step 3 — mark as cancelled
         booking.setStatus("CANCELLED");
         bookingRepository.save(booking);
 
-        // 3. Increment available seats back
+        // Step 4 — give the seat back so others can book it
         Showtime showtime = showtimeRepository.findById(booking.getShowtimeId());
         if (showtime != null) {
             showtime.setAvailableSeats(showtime.getAvailableSeats() + 1);

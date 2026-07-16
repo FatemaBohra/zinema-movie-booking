@@ -70,18 +70,11 @@ const BookingPage = () => {
             // this gets the Auth0 JWT token and sends it in the Authorization header 
             // so Spring Boot can validate it.
             const token = await getAccessTokenSilently()
-            // To avoid "Invalid character" error — the "| in auth0|6a5649..." in URLs
-            // URL encode is needed!
-            const userId = encodeURIComponent(user?.sub || 'USER-123')
 
             await axios.post(
-                `http://localhost:8080/api/bookings?userId=${userId}&showtimeId=${id}&seatId=${selectedSeat}`,
+                `http://localhost:8080/api/bookings?showtimeId=${id}&seatId=${selectedSeat}`,
                 {},
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }
+                { headers: { Authorization: `Bearer ${token}` } }
             )
 
             navigate('/history')

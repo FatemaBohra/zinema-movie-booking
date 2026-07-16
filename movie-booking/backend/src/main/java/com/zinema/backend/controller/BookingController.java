@@ -22,25 +22,22 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.getAllBookings());
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Booking>> getBookingsByUser(@PathVariable String userId) {
-        return ResponseEntity.ok(bookingService.getBookingsByUser(userId));
+    @GetMapping("/my")
+    public ResponseEntity<List<Booking>> getMyBookings() {
+        return ResponseEntity.ok(bookingService.getBookingsByUser());
     }
 
     @PostMapping
     public ResponseEntity<Booking> createBooking(
-            @RequestParam String userId,
             @RequestParam String showtimeId,
             @RequestParam String seatId) {
-        Booking booking = bookingService.createBooking(userId, showtimeId, seatId);
+        Booking booking = bookingService.createBooking(showtimeId, seatId);
         return ResponseEntity.status(HttpStatus.CREATED).body(booking);
     }
 
     @PutMapping("/{bookingId}/cancel")
-    public ResponseEntity<Booking> cancelBooking(
-            @RequestParam String userId,
-            @PathVariable String bookingId) {
-        Booking booking = bookingService.cancelBooking(userId, bookingId);
+    public ResponseEntity<Booking> cancelBooking(@PathVariable String bookingId) {
+        Booking booking = bookingService.cancelBooking(bookingId);
         return ResponseEntity.ok(booking);
     }
 }

@@ -32,9 +32,8 @@ const UserHistoryPage = () => {
         const fetchBookings = async () => {
             try {
                 const token = await getAccessTokenSilently()
-                const userId = encodeURIComponent(user?.sub || '')
                 const res = await axios.get(
-                    `http://localhost:8080/api/bookings/user/${userId}`,
+                    `http://localhost:8080/api/bookings/my`,
                     { headers: { Authorization: `Bearer ${token}` } }
                 )
                 setBookings(res.data)
@@ -51,9 +50,8 @@ const UserHistoryPage = () => {
     const handleCancel = async (bookingId: string) => {
         try {
             const token = await getAccessTokenSilently()
-            const userId = encodeURIComponent(user?.sub || '')
             await axios.put(
-                `http://localhost:8080/api/bookings/${bookingId}/cancel?userId=${userId}`,
+                `http://localhost:8080/api/bookings/${bookingId}/cancel`,
                 {},
                 { headers: { Authorization: `Bearer ${token}` } }
             )

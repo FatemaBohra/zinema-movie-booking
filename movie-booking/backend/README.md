@@ -74,12 +74,12 @@ com.zinema.backend/
 
 ### Bookings — `/api/bookings`
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/api/bookings` | Authenticated | Get all bookings |
-| GET | `/api/bookings/user/{userId}` | Authenticated | Get user's bookings |
-| POST | `/api/bookings` | Authenticated | Create booking |
-| PUT | `/api/bookings/{bookingId}/cancel` | Authenticated | Cancel booking |
+| Method | Endpoint | Auth | Description                                                                         |
+|--------|----------|------|-------------------------------------------------------------------------------------|
+| GET | `/api/bookings` | Authenticated | Get all bookings                                                                    |
+| GET | `/api/bookings/my` | Authenticated | Get user's bookings. No "userID" needed as it comes automatically from the JWT token. |
+| POST | `/api/bookings` | Authenticated | Create booking                                                                      |
+| PUT | `/api/bookings/{bookingId}/cancel` | Authenticated | Cancel booking                                                                      |
 
 ### Payments — `/api/payments`
 
