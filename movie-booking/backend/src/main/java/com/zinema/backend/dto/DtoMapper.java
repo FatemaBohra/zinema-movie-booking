@@ -36,11 +36,14 @@ public class DtoMapper {
                 .build();
     }
 
-    public static BookingDTO toBookingDTO(Booking booking) {
+    public static BookingDTO toBookingDTO(Booking booking, Movie movie, Showtime showtime) {
         return BookingDTO.builder()
                 .bookingId(booking.getBookingId())
                 .movieId(booking.getMovieId())
+                .movieTitle(movie != null ? movie.getTitle() : booking.getMovieId())
                 .showtimeId(booking.getShowtimeId())
+                .showtimeTime(showtime != null ? showtime.getStartTime() : booking.getShowtimeId())
+                .hall(showtime != null ? showtime.getHall() : null)
                 .seatId(booking.getSeatId())
                 .status(booking.getStatus())
                 .totalAmount(booking.getTotalAmount())

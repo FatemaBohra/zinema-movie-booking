@@ -5,10 +5,11 @@ import axios from 'axios'
 
 interface Booking {
     bookingId: string
-    userId: string
-    sk: string
     movieId: string
+    movieTitle: string
     showtimeId: string
+    showtimeTime: string
+    hall: string
     seatId: string
     status: string
     totalAmount: number
@@ -152,15 +153,16 @@ const UserHistoryPage = () => {
                             </div>
 
                             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '0.25rem' }}>
-                                Showtime: <span style={{ color: 'var(--text-primary)' }}>{booking.showtimeId}</span>
+                                🎬 <span style={{ color: 'var(--text-primary)', fontWeight: '600' }}>{booking.movieTitle}</span>
                             </p>
                             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '0.25rem' }}>
-                                Seat: <span style={{ color: 'var(--text-primary)' }}>{booking.seatId}</span>
+                                {new Date(booking.showtimeTime).toLocaleString()}
+                            </p>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '0.25rem' }}>
+                                Location: {booking.hall}
                             </p>
                             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                                Booked: <span style={{ color: 'var(--text-primary)' }}>
-                                    {new Date(booking.createdAt).toLocaleString()}
-                                </span>
+                                Seat: <span style={{ color: 'var(--text-primary)' }}>{booking.seatId}</span>
                             </p>
                         </div>
 

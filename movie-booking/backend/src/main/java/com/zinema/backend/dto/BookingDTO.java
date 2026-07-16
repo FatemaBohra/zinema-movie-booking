@@ -8,7 +8,10 @@ import lombok.Data;
 public class BookingDTO {
     private String bookingId;
     private String movieId;
+    private String movieTitle;
     private String showtimeId;
+    private String showtimeTime;
+    private String hall;
     private String seatId;
     private String status;
     private double totalAmount;

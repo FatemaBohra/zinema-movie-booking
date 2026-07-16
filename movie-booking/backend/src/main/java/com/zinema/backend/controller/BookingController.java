@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import com.zinema.backend.dto.DtoMapper;
 import com.zinema.backend.dto.BookingDTO;
 import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -18,20 +19,20 @@ public class BookingController {
 
     private final BookingService bookingService;
 
-    @GetMapping
-    public ResponseEntity<List<BookingDTO>> getAllBookings() {
-        return ResponseEntity.ok(bookingService.getAllBookings()
-                .stream()
-                .map(DtoMapper::toBookingDTO)
-                .collect(java.util.stream.Collectors.toList()));
-    }
-
     @GetMapping("/my")
     public ResponseEntity<List<BookingDTO>> getMyBookings() {
-        return ResponseEntity.ok(bookingService.getBookingsByUser()
-                .stream()
-                .map(DtoMapper::toBookingDTO)
-                .collect(java.util.stream.Collectors.toList()));
+        return ResponseEntity.ok(bookingService.getBookingsByUser());
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<List<BookingDTO>> getAllBookings() {
+        return ResponseEntity.ok(bookingService.getAllBookings());
+    }
+
+    @PutMapping("/{bookingId}/cancel")
+    public ResponseEntity<BookingDTO> cancelBooking(@PathVariable String bookingId) {
+        return ResponseEntity.ok(bookingService.cancelBooking(bookingId));
     }
 
     @PostMapping
@@ -40,12 +41,6 @@ public class BookingController {
             @RequestParam String seatId,
             @RequestParam(required = false) String paymentIntentId) {
         Booking booking = bookingService.createBooking(showtimeId, seatId, paymentIntentId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(DtoMapper.toBookingDTO(booking));
-    }
-
-    @PutMapping("/{bookingId}/cancel")
-    public ResponseEntity<BookingDTO> cancelBooking(@PathVariable String bookingId) {
-        Booking booking = bookingService.cancelBooking(bookingId);
-        return ResponseEntity.ok(DtoMapper.toBookingDTO(booking));
+        return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.enrichBooking(booking));
     }
 }

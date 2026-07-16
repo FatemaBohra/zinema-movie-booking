@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
@@ -18,6 +19,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Value("${auth0.audience}")
@@ -30,17 +32,25 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // This allows all preflight OPTIONS requests through before security checks them
+//                        .requestMatchers(HttpMethod.GET, "/api/movies/**").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/api/showtimes/**").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "/api/movies/**").hasAuthority("ROLE_admin")
+//                        .requestMatchers(HttpMethod.PUT, "/api/movies/**").hasAuthority("ROLE_admin")
+//                        .requestMatchers(HttpMethod.DELETE, "/api/movies/**").hasAuthority("ROLE_admin")
+//                        .requestMatchers(HttpMethod.POST, "/api/showtimes/**").hasAuthority("ROLE_admin")
+//                        .requestMatchers(HttpMethod.DELETE, "/api/showtimes/**").hasAuthority("ROLE_admin")
+//                        .requestMatchers("/api/payments/**").authenticated() // Stripe authentication
+//                        .requestMatchers("/api/s3/**").hasAuthority("ROLE_admin")
+//                        .anyRequest().authenticated()
+//                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // This allows all preflight OPTIONS requests through before security checks them
                         .requestMatchers(HttpMethod.GET, "/api/movies/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/showtimes/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/movies/**").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.PUT, "/api/movies/**").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.DELETE, "/api/movies/**").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.POST, "/api/showtimes/**").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.DELETE, "/api/showtimes/**").hasAuthority("ROLE_admin")
-                        .requestMatchers("/api/payments/**").authenticated() // Stripe authentication
-                        .requestMatchers("/api/s3/**").hasAuthority("ROLE_admin")
+                        .requestMatchers("/api/payments/**").authenticated()
+                        .requestMatchers("/api/s3/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

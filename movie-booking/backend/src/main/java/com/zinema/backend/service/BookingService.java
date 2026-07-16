@@ -1,8 +1,12 @@
 package com.zinema.backend.service;
 
+import com.zinema.backend.dto.BookingDTO;
+import com.zinema.backend.dto.DtoMapper;
 import com.zinema.backend.model.Booking;
+import com.zinema.backend.model.Movie;
 import com.zinema.backend.model.Showtime;
 import com.zinema.backend.repository.BookingRepository;
+import com.zinema.backend.repository.MovieRepository;
 import com.zinema.backend.repository.ShowtimeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +23,7 @@ public class BookingService {
 
     private final BookingRepository bookingRepository;
     private final ShowtimeRepository showtimeRepository;
+    private final MovieRepository movieRepository;
 
     /**
      * Extracts the authenticated user's ID from the JWT token.
@@ -83,17 +88,29 @@ public class BookingService {
      * Returns all bookings for the currently authenticated user.
      * userId is extracted from JWT — no need to pass it in the URL.
      */
-    public List<Booking> getBookingsByUser() {
+    public List<BookingDTO> getBookingsByUser() {
         String userId = getCurrentUserId();
-        return bookingRepository.findByUserId(userId);
+        return bookingRepository.findByUserId(userId)
+                .stream()
+                .map(this::enrichBooking)
+                .collect(java.util.stream.Collectors.toList());
     }
 
     /**
      * Returns all bookings across all users.
      * Used by the admin panel to view all bookings.
      */
-    public List<Booking> getAllBookings() {
-        return bookingRepository.findAll();
+    public List<BookingDTO> getAllBookings() {
+        return bookingRepository.findAll()
+                .stream()
+                .map(this::enrichBooking)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    public BookingDTO enrichBooking(Booking booking) {
+        Movie movie = movieRepository.findById(booking.getMovieId());
+        Showtime showtime = showtimeRepository.findById(booking.getShowtimeId());
+        return DtoMapper.toBookingDTO(booking, movie, showtime);
     }
 
     /**
@@ -104,7 +121,7 @@ public class BookingService {
      * 3. Update status to CANCELLED
      * 4. Increment availableSeats back on the showtime
      */
-    public Booking cancelBooking(String bookingId) {
+    public BookingDTO cancelBooking(String bookingId) {
         // Step 1 — get userId from JWT
         String userId = getCurrentUserId();
 
@@ -125,6 +142,6 @@ public class BookingService {
             showtimeRepository.save(showtime);
         }
 
-        return booking;
+        return enrichBooking(booking);
     }
 }

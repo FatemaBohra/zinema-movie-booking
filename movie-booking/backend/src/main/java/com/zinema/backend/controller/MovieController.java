@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.zinema.backend.dto.DtoMapper;
 import com.zinema.backend.dto.MovieDTO;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -50,12 +51,14 @@ public class MovieController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<MovieDTO> createMovie(@RequestBody Movie movie) {
         Movie created = movieService.createMovie(movie);
         return ResponseEntity.status(HttpStatus.CREATED).body(DtoMapper.toMovieDTO(created));
     }
 
     @PutMapping("/{movieId}")
+    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<MovieDTO> updateMovie(@PathVariable String movieId,
                                                 @RequestBody Movie movie) {
         movie.setMovieId(movieId);
@@ -63,6 +66,7 @@ public class MovieController {
     }
 
     @DeleteMapping("/{movieId}")
+    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<Void> deleteMovie(@PathVariable String movieId) {
         movieService.deleteMovie(movieId);
         return ResponseEntity.noContent().build();
