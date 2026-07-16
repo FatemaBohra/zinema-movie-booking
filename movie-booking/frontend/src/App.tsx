@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import NavBar from './components/NavBar'
 import HomePage from './pages/HomePage'
 import MovieDetailPage from './pages/MovieDetailPage'
 import BookingPage from './pages/BookingPage'
@@ -9,6 +10,7 @@ import NotFoundPage from './pages/NotFoundPage'
 const App = () => {
   return (
     <BrowserRouter>
+      <NavBar />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/movies/:id" element={<MovieDetailPage />} />

@@ -25,6 +25,7 @@ public class MovieService {
         movie.setMovieId("MOVIE-" + UUID.randomUUID());
         movie.setSk("METADATA");
         movieRepository.save(movie);
+        System.out.println("Movie saved: " + movie.getMovieId());
         return movie;
     }
 
