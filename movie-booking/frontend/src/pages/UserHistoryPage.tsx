@@ -50,7 +50,7 @@ const UserHistoryPage = () => {
 
     const handleCancel = async (bookingId: string) => {
         const confirmed = window.confirm(
-            'Are you sure you want to cancel this booking?\n\nPlease note: Your payment will be refunded within 5-10 business days depending on your bank.'
+            'Are you sure you want to cancel this booking?\n\nPlease note: Your payment will be refunded within 5-10 business days.'
         )
 
         if (!confirmed) return
