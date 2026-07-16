@@ -72,8 +72,6 @@ const BookingPage = () => {
             setBooking(true)
             setError(null)
 
-            // this gets the Auth0 JWT token and sends it in the Authorization header 
-            // so Spring Boot can validate it.
             const token = await getAccessTokenSilently()
 
             // Step 1 — create payment intent
@@ -101,7 +99,6 @@ const BookingPage = () => {
             setBooking(false)
         }
     }
-
 
     if (loading) return (
         <div style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '4rem' }}>
@@ -163,11 +160,41 @@ const BookingPage = () => {
                 </div>
             </div>
 
+            {/* Not logged in banner */}
+            {!isAuthenticated && (
+                <div style={{
+                    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                    border: '1px solid var(--accent)',
+                    borderRadius: '8px',
+                    padding: '1rem',
+                    marginBottom: '1.5rem',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                }}>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                        You need to login to complete your booking
+                    </p>
+                    <button
+                        onClick={() => loginWithRedirect()}
+                        style={{
+                            backgroundColor: 'var(--accent)',
+                            color: 'white',
+                            padding: '0.4rem 1rem',
+                            borderRadius: '4px',
+                            fontSize: '0.85rem',
+                            fontWeight: '600',
+                            border: 'none',
+                            cursor: 'pointer',
+                        }}
+                    >
+                        Login
+                    </button>
+                </div>
+            )}
+
             {/* Screen */}
-            <div style={{
-                textAlign: 'center',
-                marginBottom: '2rem',
-            }}>
+            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                 <div style={{
                     height: '8px',
                     backgroundColor: 'var(--accent)',
@@ -320,7 +347,7 @@ const BookingPage = () => {
                         transition: 'all 0.2s',
                     }}
                 >
-                    {booking ? 'Booking...' : isAuthenticated ? 'Book Now' : 'Login to Book'}
+                    {booking ? 'Processing...' : isAuthenticated ? 'Book Now' : 'Login to Book'}
                 </button>
             </div>
         </div>

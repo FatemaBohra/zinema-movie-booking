@@ -18,7 +18,7 @@ interface Booking {
 }
 
 const UserHistoryPage = () => {
-    const { isAuthenticated, user, getAccessTokenSilently, loginWithRedirect } = useAuth0()
+    const { isAuthenticated, getAccessTokenSilently, loginWithRedirect } = useAuth0()
     const navigate = useNavigate()
     const [bookings, setBookings] = useState<Booking[]>([])
     const [loading, setLoading] = useState(true)
@@ -26,7 +26,7 @@ const UserHistoryPage = () => {
 
     useEffect(() => {
         if (!isAuthenticated) {
-            loginWithRedirect()
+            setLoading(false)
             return
         }
 
@@ -67,6 +67,41 @@ const UserHistoryPage = () => {
     if (loading) return (
         <div style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '4rem' }}>
             Loading...
+        </div>
+    )
+
+    if (!isAuthenticated) return (
+        <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '60vh',
+            textAlign: 'center',
+            padding: '2rem',
+        }}>
+            <p style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎬</p>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+                Login to view your bookings
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
+                Your booking history will appear here after you login
+            </p>
+            <button
+                onClick={() => loginWithRedirect()}
+                style={{
+                    backgroundColor: 'var(--accent)',
+                    color: 'white',
+                    padding: '0.75rem 2rem',
+                    borderRadius: '6px',
+                    fontSize: '1rem',
+                    fontWeight: '600',
+                    border: 'none',
+                    cursor: 'pointer',
+                }}
+            >
+                Login
+            </button>
         </div>
     )
 
@@ -124,7 +159,7 @@ const UserHistoryPage = () => {
                         key={booking.bookingId}
                         style={{
                             backgroundColor: 'var(--bg-card)',
-                            border: `1px solid ${booking.status === 'CANCELLED' ? 'var(--border)' : 'var(--border)'}`,
+                            border: '1px solid var(--border)',
                             borderRadius: '8px',
                             padding: '1.5rem',
                             display: 'flex',
@@ -146,9 +181,6 @@ const UserHistoryPage = () => {
                                     color: booking.status === 'CONFIRMED' ? '#22c55e' : 'var(--accent)',
                                 }}>
                                     {booking.status}
-                                </span>
-                                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                                    {booking.bookingId}
                                 </span>
                             </div>
 

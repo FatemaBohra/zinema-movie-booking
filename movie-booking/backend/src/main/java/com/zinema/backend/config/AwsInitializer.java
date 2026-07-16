@@ -11,6 +11,14 @@
  * Call TMDB API on startup to fetch popular movies
  * Save them to DynamoDB with real poster URLs from TMDB
  * Keep your admin panel for editing and deleting
+ *
+ *
+ * TMDB total calls right now:
+ * 1 call  → fetch popular movies list
+ * 1 call  → fetch genre list
+ * 10 calls → fetch credits for each of 10 movies (1 per movie)
+ * ─────────────────────────────────────────────
+ * 12 calls total
  * */
 
 package com.zinema.backend.config;
@@ -156,13 +164,36 @@ public class AwsInitializer {
                     genre = genreMap.getOrDefault(genreId, "Unknown");
                 }
 
+                // Fetch director from TMDB credits endpoint
+                // a separate API call per movie to the credits endpoint.
+                String director = "Unknown";
+                try {
+                    String creditsUrl = "https://api.themoviedb.org/3/movie/" + movie.get("id").asInt() + "/credits?api_key=" + tmdbApiKey;
+                    java.net.http.HttpRequest creditsRequest = java.net.http.HttpRequest.newBuilder()
+                            .uri(java.net.URI.create(creditsUrl))
+                            .GET()
+                            .build();
+                    java.net.http.HttpResponse<String> creditsResponse = client.send(creditsRequest,
+                            java.net.http.HttpResponse.BodyHandlers.ofString());
+                    JsonNode creditsRoot = objectMapper.readTree(creditsResponse.body());
+                    JsonNode crew = creditsRoot.get("crew");
+                    for (JsonNode member : crew) {
+                        if ("Director".equals(member.get("job").asText())) {
+                            director = member.get("name").asText();
+                            break;
+                        }
+                    }
+                } catch (Exception e) {
+                    System.out.println("Could not fetch director for movie: " + movie.get("title").asText());
+                }
+
                 com.zinema.backend.model.Movie m = com.zinema.backend.model.Movie.builder()
                         .movieId(movieId)
                         .sk("METADATA")
                         .title(movie.get("title").asText())
                         .description(movie.get("overview").asText())
                         .genre(genre)  // uses real genre name
-                        .director("Unknown")
+                        .director(director) // uses director name
                         .durationMinutes(120)
                         .releaseDate(movie.get("release_date").asText())
                         .rating(movie.get("vote_average").asDouble())
