@@ -29,6 +29,12 @@ public class AwsInitializer {
     @Value("${aws.dynamodb.bookings-table}")
     private String bookingsTable;
 
+    private static final String INCEPTION_ID = "MOVIE-inception";
+    private static final String DARK_KNIGHT_ID = "MOVIE-dark-knight";
+    private static final String INTERSTELLAR_ID = "MOVIE-interstellar";
+    private static final String DUNE_ID = "MOVIE-dune";
+    private static final String PARASITE_ID = "MOVIE-parasite";
+
 //    @PostConstruct means it runs automatically when Spring Boot starts
     @PostConstruct
     public void initializeTables() {
@@ -37,6 +43,7 @@ public class AwsInitializer {
         createTableIfNotExists(bookingsTable, "userId", "sk");
         s3Service.createBucketIfNotExists();
         seedMovies();
+        seedShowtimes();
     }
 
     private void createTableIfNotExists(String tableName, String partitionKey, String sortKey) {
@@ -94,7 +101,7 @@ public class AwsInitializer {
             // Seed movies
             List<com.zinema.backend.model.Movie> movies = List.of(
                     com.zinema.backend.model.Movie.builder()
-                            .movieId("MOVIE-" + java.util.UUID.randomUUID())
+                            .movieId(INCEPTION_ID)
                             .sk("METADATA")
                             .title("Inception")
                             .description("A thief who steals corporate secrets through dream-sharing technology")
@@ -105,7 +112,7 @@ public class AwsInitializer {
                             .rating(8.8)
                             .build(),
                     com.zinema.backend.model.Movie.builder()
-                            .movieId("MOVIE-" + java.util.UUID.randomUUID())
+                            .movieId(DARK_KNIGHT_ID)
                             .sk("METADATA")
                             .title("The Dark Knight")
                             .description("Batman faces the Joker, a criminal mastermind who wants to plunge Gotham into anarchy")
@@ -116,7 +123,7 @@ public class AwsInitializer {
                             .rating(9.0)
                             .build(),
                     com.zinema.backend.model.Movie.builder()
-                            .movieId("MOVIE-" + java.util.UUID.randomUUID())
+                            .movieId(INTERSTELLAR_ID)
                             .sk("METADATA")
                             .title("Interstellar")
                             .description("A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival")
@@ -127,7 +134,7 @@ public class AwsInitializer {
                             .rating(8.6)
                             .build(),
                     com.zinema.backend.model.Movie.builder()
-                            .movieId("MOVIE-" + java.util.UUID.randomUUID())
+                            .movieId(DUNE_ID)
                             .sk("METADATA")
                             .title("Dune")
                             .description("A noble family becomes embroiled in a war for control over the galaxy's most valuable asset")
@@ -138,7 +145,7 @@ public class AwsInitializer {
                             .rating(8.0)
                             .build(),
                     com.zinema.backend.model.Movie.builder()
-                            .movieId("MOVIE-" + java.util.UUID.randomUUID())
+                            .movieId(PARASITE_ID)
                             .sk("METADATA")
                             .title("Parasite")
                             .description("Greed and class discrimination threaten the newly formed symbiotic relationship between the wealthy Park family and the destitute Kim clan")
@@ -155,6 +162,111 @@ public class AwsInitializer {
 
         } catch (Exception e) {
             System.out.println("Error seeding movies: " + e.getMessage());
+        }
+    }
+    private void seedShowtimes() {
+        try {
+            software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient enhancedClient =
+                    software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient.builder()
+                            .dynamoDbClient(dynamoDbClient)
+                            .build();
+
+            software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable<com.zinema.backend.model.Showtime> showtimeTable =
+                    enhancedClient.table(showtimesTable,
+                            software.amazon.awssdk.enhanced.dynamodb.TableSchema
+                                    .fromBean(com.zinema.backend.model.Showtime.class));
+
+            long count = showtimeTable.scan().items().stream().count();
+            if (count > 0) {
+                System.out.println("Showtimes already seeded, skipping...");
+                return;
+            }
+
+            List<com.zinema.backend.model.Showtime> showtimes = List.of(
+                    com.zinema.backend.model.Showtime.builder()
+                            .showtimeId("SHOWTIME-inception-1")
+                            .sk("METADATA")
+                            .movieId(INCEPTION_ID)
+                            .startTime("2026-07-20T14:00:00")
+                            .endTime("2026-07-20T16:28:00")
+                            .hall("Hall A")
+                            .totalSeats(100)
+                            .availableSeats(100)
+                            .ticketPrice(12.99)
+                            .build(),
+                    com.zinema.backend.model.Showtime.builder()
+                            .showtimeId("SHOWTIME-inception-2")
+                            .sk("METADATA")
+                            .movieId(INCEPTION_ID)
+                            .startTime("2026-07-20T19:30:00")
+                            .endTime("2026-07-20T21:58:00")
+                            .hall("Hall B")
+                            .totalSeats(80)
+                            .availableSeats(80)
+                            .ticketPrice(14.99)
+                            .build(),
+                    com.zinema.backend.model.Showtime.builder()
+                            .showtimeId("SHOWTIME-dark-knight-1")
+                            .sk("METADATA")
+                            .movieId(DARK_KNIGHT_ID)
+                            .startTime("2026-07-20T15:00:00")
+                            .endTime("2026-07-20T17:32:00")
+                            .hall("Hall A")
+                            .totalSeats(100)
+                            .availableSeats(100)
+                            .ticketPrice(12.99)
+                            .build(),
+                    com.zinema.backend.model.Showtime.builder()
+                            .showtimeId("SHOWTIME-dark-knight-2")
+                            .sk("METADATA")
+                            .movieId(DARK_KNIGHT_ID)
+                            .startTime("2026-07-20T20:00:00")
+                            .endTime("2026-07-20T22:32:00")
+                            .hall("Hall C")
+                            .totalSeats(120)
+                            .availableSeats(120)
+                            .ticketPrice(14.99)
+                            .build(),
+                    com.zinema.backend.model.Showtime.builder()
+                            .showtimeId("SHOWTIME-interstellar-1")
+                            .sk("METADATA")
+                            .movieId(INTERSTELLAR_ID)
+                            .startTime("2026-07-21T18:00:00")
+                            .endTime("2026-07-21T20:49:00")
+                            .hall("Hall B")
+                            .totalSeats(80)
+                            .availableSeats(80)
+                            .ticketPrice(12.99)
+                            .build(),
+                    com.zinema.backend.model.Showtime.builder()
+                            .showtimeId("SHOWTIME-dune-1")
+                            .sk("METADATA")
+                            .movieId(DUNE_ID)
+                            .startTime("2026-07-21T20:00:00")
+                            .endTime("2026-07-21T22:35:00")
+                            .hall("Hall A")
+                            .totalSeats(100)
+                            .availableSeats(100)
+                            .ticketPrice(14.99)
+                            .build(),
+                    com.zinema.backend.model.Showtime.builder()
+                            .showtimeId("SHOWTIME-parasite-1")
+                            .sk("METADATA")
+                            .movieId(PARASITE_ID)
+                            .startTime("2026-07-22T19:00:00")
+                            .endTime("2026-07-22T21:12:00")
+                            .hall("Hall C")
+                            .totalSeats(120)
+                            .availableSeats(120)
+                            .ticketPrice(12.99)
+                            .build()
+            );
+
+            showtimes.forEach(showtimeTable::putItem);
+            System.out.println("Seeded " + showtimes.size() + " showtimes!");
+
+        } catch (Exception e) {
+            System.out.println("Error seeding showtimes: " + e.getMessage());
         }
     }
 
