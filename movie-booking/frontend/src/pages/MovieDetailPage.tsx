@@ -174,6 +174,7 @@ const MovieDetailPage = () => {
                                     const el = e.currentTarget as HTMLDivElement
                                     el.style.borderColor = 'var(--border)'
                                 }}
+                                // Navigate to BookingPage
                                 onClick={() => {
                                     if (showtime.availableSeats > 0) {
                                         navigate(`/booking/${showtime.showtimeId}`)

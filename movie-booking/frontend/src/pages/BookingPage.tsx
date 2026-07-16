@@ -142,7 +142,7 @@ const BookingPage = () => {
                         {movie.title}
                     </h1>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '0.25rem' }}>
-                        📅 {new Date(showtime.startTime).toLocaleString()}
+                        {new Date(showtime.startTime).toLocaleString()}
                     </p>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '0.25rem' }}>
                         Location: {showtime.hall}
