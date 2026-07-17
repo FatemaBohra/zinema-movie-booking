@@ -71,7 +71,7 @@ const AdminPage = () => {
     const fetchBookings = async () => {
         try {
             const token = await getAccessTokenSilently()
-            const res = await axios.get('`${import.meta.env.VITE_API_URL}/api/bookings', {
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/bookings`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
             setBookings(res.data)
@@ -93,7 +93,7 @@ const AdminPage = () => {
         try {
             setError(null)
             const token = await getAccessTokenSilently()
-            await axios.post('`${import.meta.env.VITE_API_URL}/api/movies', {
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/movies`, {
                 ...newMovie,
                 durationMinutes: parseInt(newMovie.durationMinutes),
                 rating: parseFloat(newMovie.rating),
