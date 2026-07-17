@@ -10,7 +10,7 @@ const HomePage = () => {
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
-        axios.get('http://localhost:8080/api/movies')
+        axios.get('import.meta.env.VITE_API_URL/api/movies')
             .then(res => {
                 setMovies(res.data)
                 setLoading(false)

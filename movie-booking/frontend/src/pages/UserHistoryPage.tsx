@@ -34,7 +34,7 @@ const UserHistoryPage = () => {
             try {
                 const token = await getAccessTokenSilently()
                 const res = await axios.get(
-                    `http://localhost:8080/api/bookings/my`,
+                    `import.meta.env.VITE_API_URL/api/bookings/my`,
                     { headers: { Authorization: `Bearer ${token}` } }
                 )
                 setBookings(res.data)
@@ -58,7 +58,7 @@ const UserHistoryPage = () => {
         try {
             const token = await getAccessTokenSilently()
             await axios.put(
-                `http://localhost:8080/api/bookings/${bookingId}/cancel`,
+                `import.meta.env.VITE_API_URL/api/bookings/${bookingId}/cancel`,
                 {},
                 { headers: { Authorization: `Bearer ${token}` } }
             )

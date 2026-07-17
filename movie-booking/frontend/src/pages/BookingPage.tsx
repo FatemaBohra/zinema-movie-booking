@@ -45,11 +45,11 @@ const BookingPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const showtimeRes = await axios.get(`http://localhost:8080/api/showtimes/${id}`)
+                const showtimeRes = await axios.get(`import.meta.env.VITE_API_URL/api/showtimes/${id}`)
                 setShowtime(showtimeRes.data)
-                const movieRes = await axios.get(`http://localhost:8080/api/movies/${showtimeRes.data.movieId}`)
+                const movieRes = await axios.get(`import.meta.env.VITE_API_URL/api/movies/${showtimeRes.data.movieId}`)
                 setMovie(movieRes.data)
-                const seatsRes = await axios.get(`http://localhost:8080/api/bookings/showtime/${id}/seats`)
+                const seatsRes = await axios.get(`import.meta.env.VITE_API_URL/api/bookings/showtime/${id}/seats`)
                 setBookedSeats(seatsRes.data)
             } catch (err) {
                 setError('Failed to load showtime details')
@@ -84,7 +84,7 @@ const BookingPage = () => {
 
             // Create payment intent
             const paymentRes = await axios.post(
-                `http://localhost:8080/api/payments/create-payment-intent?amount=${showtime.ticketPrice}&currency=cad`,
+                `import.meta.env.VITE_API_URL/api/payments/create-payment-intent?amount=${showtime.ticketPrice}&currency=cad`,
                 {},
                 { headers: { Authorization: `Bearer ${token}` } }
             )
@@ -104,7 +104,7 @@ const BookingPage = () => {
         try {
             const token = await getAccessTokenSilently()
             await axios.post(
-                `http://localhost:8080/api/bookings?showtimeId=${id}&seatId=${selectedSeat}&paymentIntentId=${confirmedPaymentIntentId}`,
+                `import.meta.env.VITE_API_URL/api/bookings?showtimeId=${id}&seatId=${selectedSeat}&paymentIntentId=${confirmedPaymentIntentId}`,
                 {},
                 { headers: { Authorization: `Bearer ${token}` } }
             )
