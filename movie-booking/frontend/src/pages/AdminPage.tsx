@@ -115,7 +115,7 @@ const AdminPage = () => {
         try {
             setError(null)
             const token = await getAccessTokenSilently()
-            await axios.delete(`${import.meta.env.VITE_API_URL} / api / movies / ${movieId}`, {
+            await axios.delete(`${import.meta.env.VITE_API_URL}/api/movies/${movieId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
             setSuccess('Movie deleted!')
@@ -129,7 +129,7 @@ const AdminPage = () => {
         try {
             setError(null)
             const token = await getAccessTokenSilently()
-            await axios.post(`${import.meta.env.VITE_API_URL} / api / showtimes`, {
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/showtimes`, {
                 ...newShowtime,
                 totalSeats: parseInt(newShowtime.totalSeats),
                 ticketPrice: parseFloat(newShowtime.ticketPrice),

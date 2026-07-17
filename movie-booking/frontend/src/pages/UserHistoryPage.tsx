@@ -34,7 +34,7 @@ const UserHistoryPage = () => {
             try {
                 const token = await getAccessTokenSilently()
                 const res = await axios.get(
-                    `${import.meta.env.VITE_API_URL} / api / bookings / my`,
+                    `${import.meta.env.VITE_API_URL}/api/bookings/my`,
                     { headers: { Authorization: `Bearer ${token}` } }
                 )
                 setBookings(res.data)
