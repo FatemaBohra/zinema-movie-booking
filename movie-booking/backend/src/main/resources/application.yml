@@ -1,32 +1,33 @@
-spring:
+spring:                          # Spring Boot settings
   application:
-    name: backend
-#  This tells Spring Boot to import application-secrets.yml if it exists.
-#  The optional: prefix means it won't crash if the file is missing (useful for production where you'll use real environment variables instead).
+    name: backend                # app name
+  #  This tells Spring Boot to import application-secrets.yml if it exists.
+  #  The optional: prefix means it won't crash if the file is missing (useful for production where you'll use real environment variables instead).
   config:
-    import: optional:classpath:application-secrets.yml
+    import: optional:classpath:application-secrets.yml  # load secrets file
 
-aws:
-  region: us-east-1
-  endpoint: http://localhost:4566
-  accessKey: test
+aws:                             # AWS settings
+  region: us-east-1             # which AWS region
+  endpoint: http://localhost:4566  # where to connect (LocalStack locally)
+  accessKey: test               # AWS credentials
   secretKey: test
-  dynamodb:
+  dynamodb:                     # DynamoDB specific
     movies-table: zinema-movies
     showtimes-table: zinema-showtimes
     bookings-table: zinema-bookings
-  s3:
+  s3:                           # S3 specific
     bucket-name: zinema-posters
 
-auth0:
-  domain: dev-58r52o8fx5djc8od.us.auth0.com
-  audience: https://zinema-api
+auth0:                           # Auth0 settings
+  domain: dev-58r52o8fx5djc8od.us.auth0.com  # Auth0 tenant
+  audience: https://zinema-api  # API identifier
 
-stripe:
-  secret-key: ${STRIPE_SECRET_KEY}
+stripe:                          # Stripe settings
+  secret-key: ${STRIPE_SECRET_KEY}  # loaded from secrets file or env var
 
-tmdb:
-  api-key: ${TMDB_API_KEY}
+tmdb:                            # TMDB settings
+  api-key: ${TMDB_API_KEY}      # loaded from secrets file or env var
+  movie-count: 15               # how many movies to seed
 
-server:
-  port: 8080
+server:                          # Server settings
+  port: 8080                    # which port Spring Boot runs on
