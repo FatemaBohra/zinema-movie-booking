@@ -11,7 +11,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/s3")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {
+        "http://localhost:5173",
+        "https://zinema-movie-booking.vercel.app"
+})
 public class S3Controller {
 
     private final S3Service s3Service;

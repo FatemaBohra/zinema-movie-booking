@@ -15,7 +15,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/showtimes")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {
+        "http://localhost:5173",
+        "https://zinema-movie-booking.vercel.app"
+})
 public class ShowtimeController {
 
     private final ShowtimeService showtimeService;

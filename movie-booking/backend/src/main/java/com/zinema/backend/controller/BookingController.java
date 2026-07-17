@@ -14,7 +14,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/api/bookings")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {
+        "http://localhost:5173",
+        "https://zinema-movie-booking.vercel.app"
+})
 public class BookingController {
 
     private final BookingService bookingService;
