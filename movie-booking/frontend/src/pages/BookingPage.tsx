@@ -28,7 +28,7 @@ const SEATS_PER_ROW = 10
 const BookingPage = () => {
     const { id } = useParams()
     const navigate = useNavigate()
-    const { isAuthenticated, loginWithRedirect, user, getAccessTokenSilently } = useAuth0()
+    const { isAuthenticated, loginWithRedirect, getAccessTokenSilently } = useAuth0()
 
     const [showtime, setShowtime] = useState<Showtime | null>(null)
     const [movie, setMovie] = useState<Movie | null>(null)
@@ -39,7 +39,6 @@ const BookingPage = () => {
     const [error, setError] = useState<string | null>(null)
 
     const [clientSecret, setClientSecret] = useState<string | null>(null)
-    const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null)
     const [showCheckout, setShowCheckout] = useState(false)
 
     useEffect(() => {
@@ -90,7 +89,6 @@ const BookingPage = () => {
             )
 
             setClientSecret(paymentRes.data.clientSecret)
-            setPaymentIntentId(paymentRes.data.paymentIntentId)
             setShowCheckout(true)
         } catch (err) {
             console.error('Error creating payment intent:', err)
