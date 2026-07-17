@@ -25,8 +25,8 @@ const MovieDetailPage = () => {
         const fetchData = async () => {
             try {
                 const [movieRes, showtimesRes] = await Promise.all([
-                    axios.get(`import.meta.env.VITE_API_URL/api/movies/${id}`),
-                    axios.get(`import.meta.env.VITE_API_URL/api/showtimes/movie/${id}`)
+                    axios.get(`${import.meta.env.VITE_API_URL} / api / movies / ${id}`),
+                    axios.get(`${import.meta.env.VITE_API_URL}/api/showtimes/movie/${id}`)
                 ])
                 setMovie(movieRes.data)
                 setShowtimes(showtimesRes.data)
